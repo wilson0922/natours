@@ -1,0 +1,19 @@
+#OS X
+
+.DS_Store*
+Icon?
+._*
+
+#Windows
+
+Thumbs.dbgi
+ehthumbs.db
+Desktop.ini
+*.env
+.prettierrc
+
+#npm
+
+node_modules
+*.log
+*.gz
