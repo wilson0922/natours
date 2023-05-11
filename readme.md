@@ -7,3 +7,4 @@ Tour application development:
 3. User and Tour functions: reviews, bookings, information modification etc.
 4. Front-end and back-end integration
 5. Payments and email functions
+   :wq
