@@ -5,7 +5,6 @@ const Booking = require('../models/bookingModel')
 const catchAsync = require('../utils/catchAsync')
 const factory = require('./handlerFactory')
 
-let session
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   // 1) Get the currently booked tour
   const tour = await Tour.findById(req.params.tourId)
@@ -28,7 +27,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   ]
 
   // 2) Create checkout session
-  session = await stripe.checkout.sessions.create({
+  const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
     // success_url: `${req.protocol}://${req.get('host')}/?tour=${
     //   req.params.tourId
@@ -76,7 +75,7 @@ exports.webhookCheckout = (req, res, next) => {
     return res.status(400).send(`Webhook Error: ${err.message}`)
   }
   if (event.type === 'checkout.session.completed')
-    createBookingCheckout(session) // temporarily
+    createBookingCheckout(event.data.object)
   res.status(200).json({ received: true })
 }
 
