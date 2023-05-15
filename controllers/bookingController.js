@@ -1,13 +1,30 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 const Tour = require('../models/tourModel')
+const User = require('../models/userModel')
 const Booking = require('../models/bookingModel')
 const catchAsync = require('../utils/catchAsync')
 const factory = require('./handlerFactory')
-const User = require('../models/userModel')
 
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   // 1) Get the currently booked tour
   const tour = await Tour.findById(req.params.tourId)
+
+  // const transformedItems = [
+  //   {
+  //     quantity: 1,
+  //     price_data: {
+  //       currency: 'usd',
+  //       unit_amount: tour.price * 100,
+  //       product_data: {
+  //         name: `${tour.name} Tour`,
+  //         description: tour.summary,
+  //         images: [
+  //           `${req.protocol}://${req.get('host')}/img/tours/${tour.imageCover}`,
+  //         ],
+  //       },
+  //     },
+  //   },
+  // ]
 
   // 2) Create checkout session
   const session = await stripe.checkout.sessions.create({
@@ -22,11 +39,11 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
     line_items: [
       {
         quantity: 1,
-        name: `${tour.name} Tour`,
         price_data: {
-          currency: 'usd',
           unit_amount: tour.price * 100,
+          currency: 'usd',
           product_data: {
+            name: `${tour.name} Tour`,
             description: tour.summary,
             images: [
               `${req.protocol}://${req.get('host')}/img/tours/${
