@@ -13,14 +13,15 @@ exports.getCheckoutSession = catchAsyncError(async (req, res, next) => {
   try {
     session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      mode: 'payment',
-      success_url: `${req.protocol}://${req.get('host')}/my-tours`,
+      mode: 'payment', // Add this line to set the mode to one-time payment
+      success_url: `${req.protocol}://${req.get(
+        'host'
+      )}/my-tours?alert=booking`,
       cancel_url: `${req.protocol}://${req.get('host')}/tour/${tour.slug}`,
       customer_email: req.user.email,
       client_reference_id: req.params.tourId,
       line_items: [
         {
-          quantity: 1,
           price_data: {
             currency: 'usd',
             unit_amount: tour.price * 100,
@@ -34,6 +35,7 @@ exports.getCheckoutSession = catchAsyncError(async (req, res, next) => {
               ],
             },
           },
+          quantity: 1,
         },
       ],
     })
@@ -74,9 +76,10 @@ exports.webhookCheckout = (req, res, next) => {
 
   res.status(200).json({ received: true })
 }
-
+//-------------------------------------------//
 exports.createBooking = factory.createOne(Booking)
 exports.getBooking = factory.getOne(Booking)
 exports.getAllBookings = factory.getAll(Booking)
 exports.updateBooking = factory.updateOne(Booking)
 exports.deleteBooking = factory.deleteOne(Booking)
+//-------------------------------------------//
